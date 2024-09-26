@@ -2,16 +2,36 @@ type FunctionPromise = () => Promise<any>;
 
 type QueueValue = Promise<any> | FunctionPromise;
 
+type CustomQueue = Map<string, QueueValue>;
+
 type QueStatus = {
     size: number,
     inProcess: number,
 }
 
-interface QueueInterface {
-    queue: Map<string, QueueValue>;
-    startProcessing: () => void;
-    queStatus: () => QueStatus;
-    addWork: (name: string, work: QueueValue) => void
+// interface QueueInterface {
+//     queue: Map<string, QueueValue>;
+//     startProcessing: () => void;
+//     queStatus: () => QueStatus;
+//     addWork: (name: string, work: QueueValue) => void
+// }
+
+abstract class Queue{
+    private queue: CustomQueue;
+    private bufferQueue: CustomQueue;
+    private errorQueue:  CustomQueue;
+    
+    public pipe: EventTarget;
+
+    abstract processQueue(): void;
+    abstract addWork(): void;
+    abstract snapShot(): void;
+    abstract pauseQueue(): void;
+    abstract deferWork(): void;
+    abstract resumeWork(): void;
+    abstract subscribe(): void;
+    private notify: () => void;
+
 }
 
 export class SyncQueue extends EventTarget implements QueueInterface {
